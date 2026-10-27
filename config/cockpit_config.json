@@ -1,0 +1,86 @@
+{
+ "title": "Phoenix R6 Program Cockpit",
+ "eyebrow_html": "GlobalFoundries <span class=\"sep\"></span> S/4HANA Phoenix <span class=\"sep\"></span> Release 6",
+ "heading_html": "Phoenix <span>R6</span> Program Cockpit",
+ "lineage": "L2 BPH → L4 Epic → Workshop → KDD → Requirement → FIT / GAP → Config / RICEFW → PBI",
+ "sources_tag_html": "ADO exports · 18 Oct 2026 · KDD, Requirements &amp; RAID exports 25 Oct 2026 · Build items &amp; PBI links 26 Oct 2026",
+ "hint_exec": "Actual vs plan to date (25 Oct 2026), by workstream",
+ "note_exec": "Done = workshop Completed, KDD Approved, requirement Approved, PBI Completed. Plan to date = target date on or before 25 Oct 2026. Cancelled workshops and rejected KDDs or requirements are left out. Data Migration = conversion PBIs (FDD, ETL Design, ETL Build, FUT of conversion objects); OCM = OCM / training PBIs; Build PBIs excludes both, so each PBI counts once. The OCM workstream row is hidden because its PBIs are shown in the OCM column; they still count in the Program row.",
+ "hint_progress": "Actual completed vs planned completed to 25 Oct 2026",
+ "hint_e2e": "Every build item from CRD / FDD to FUT · PBI target dates · as of 25 Oct 2026",
+ "note_e2e": "Build items and their PBIs come from the Build items file and the PBI links file (26 Oct 2026); PBI target dates from the 18 Oct export. Stages from the PBI title prefix: CRD, Config &amp; CUT, FDD, Source / Middleware / Target Design and Build, FUT; ETL, Technical, PI/PO and DnA PBIs sit under Other. Due date filters PBIs by their target month; build items with no PBI in the selected months are hidden.",
+ "hint_burnup": "Plan vs actual by target date · as of 25 Oct 2026",
+ "note_burnup": "Actual history: 18 Oct 2026 and 26 Oct 2026 PBI exports; a point is added with each new export.",
+ "footnotes": [
+  "Completed = workshop status Completed. In scope = all workshops except Cancelled. Plan to date = target date on or before 25 Oct 2026.",
+  "Month slicer filters every item by its own target date: workshops, KDDs, requirements, Config/RICEFW, PBIs and RAID. Items with no target date sit under \"No target date\".",
+  "RAID Tracker: organization comes from the assignee (Deloitte, UST, TCS and Applied Materials by their firm tag; everyone else on a GF address counts as GF). Total due = open items. Past due = open with target date before 25 Oct 2026.",
+  "KDDs come from the R6 KDD export (25 Oct 2026): owner = Assigned To, target date = Target Date (day/month-swapped Excel dates corrected), workstream = Area Path; approved dates and L4 links carried over from the earlier export. Open KDDs with a Target Close of 1 Dec 2025 are marked \"Check date\" but still count in plan to date and as late, matching the KDD export. Cancelled workshops are removed from the cockpit. L4 links come from the export, falling back to the traceability file.",
+  "Progress vs Plan: hit rate = actual ÷ planned to date. Traffic light = shortfall (plan to date − actual) ÷ plan to date: green under 10% (or ahead), amber 10–30%, red 30% or more. Done = workshop Completed, KDD Approved, requirement Approved, Build PBI Completed (Build PBIs = all PBIs, linked and unlinked, except Data Migration conversion PBIs and OCM / training PBIs). Detail tabs: Upcoming = open items due 26 Oct – 8 Nov; Delayed = open items with target date on or before 25 Oct. Planned to date = target date on or before 25 Oct 2026; cancelled workshops and rejected KDDs or requirements are left out. This panel uses only its own Workstream and Complex topic slicers.",
+  "<b>As of 25 Oct 2026.</b> Workshop data are from the 18 Oct export, so workshops due 19–25 Oct may already be done in ADO. PBI states and parent links are from the 26 Oct PBI links file, except the 60 OCM / training PBIs, which are not in that file and are carried from the 18 Oct export; PBI target dates and owners still come from the 18 Oct export (PBIs new on 26 Oct have neither). KDDs, requirements and RAID are from the 25 Oct exports. The RAID export holds open items only (666: 654 actions, 8 risks, 4 issues); Type PHX = work item type; target dates are taken as written, time stamp ignored.",
+  "Critical override: risk 190228 is shown as RAID-Critical in the cockpit at the program's request; it is not tagged RAID-Critical in ADO. The override is reapplied on each RAID refresh until removed.",
+  "Build items (Configuration and RICEFW) come from the Build items file (26 Oct 2026): 529 items with state, target date and tags; workstream from the ADO area path. Requirement links come from its Build items–requirement links tab (1,870 links; links to rejected requirements left out). A PBI counts as linked when its parent build item is linked to a requirement.",
+  "PBIs come from the PBI links file (26 Oct 2026): 1,947 open PBIs, each with its parent build item from the Child link. Cancelled PBIs (28) are removed; PBIs not in the file (135) are dropped, along with the five RICEFW objects that only they referenced.",
+  "Action–workshop links come from the Action-to-workshop file (295 actions on 19 workshops). 157 linked actions are not in the 25 Oct RAID export (closed or removed) and are counted as \"not in RAID export\". In the L4 table, a workshop covering several L4s attaches its actions to each of them, so the column does not sum to unique actions.",
+  "Workstream comes from area path. Items on Change_OCM show as OCM. Items on the bare GFPhoenix path show as Unassigned (L4 Epics there are mapped by L4 number instead).",
+  "Open risks and actions come from the ALL RAID Items tab (anything not Completed, Closed or Archived). They follow the Workstream and Month slicers. RAID items carry no L4 link, so the Complex Topic and KDD slicers do not apply to them.",
+  "OneStream L4 Epics (area path GFPhoenix\\\\OneStream) are excluded. L4s on the GFPhoenix root path are mapped to a workstream by L4 number. Need workshop plan = L4 Epic with no workshop linked other than cancelled ones.",
+  "L4 Traceability requirement totals leave out rejected requirements. In the L4 table each requirement counts under the L4 named in its ID (for example REQ-D2D-3.1.1.1-001 → 3.1.1.1); requirements with no R6 L4 number in the ID are attributed through workshop links and marked \"via workshop\"."
+ ],
+ "workstream_order": [
+  "O2C",
+  "S2P",
+  "D2D",
+  "M2O",
+  "R2R",
+  "OCM",
+  "Unassigned",
+  "Cross-stream"
+ ],
+ "kdd_states": [
+  "New",
+  "In Analysis",
+  "Pending Approval",
+  "Approved",
+  "Rejected"
+ ],
+ "raid_closed_states": [
+  "Completed",
+  "Closed",
+  "Archived"
+ ],
+ "raid_critical_overrides": [
+  "190228"
+ ],
+ "raid_firms": [
+  "GF",
+  "Deloitte",
+  "UST",
+  "TCS",
+  "Applied Materials"
+ ],
+ "ado_workitem_url": "https://dev.azure.com/Program-Phoenix/GFPhoenix/_workitems/edit/",
+ "org_codes": [
+  "GF",
+  "DL",
+  "TCS",
+  "UST",
+  "AMAT",
+  "NA"
+ ],
+ "org_names": {
+  "GF": "GlobalFoundries",
+  "DL": "Deloitte",
+  "TCS": "Tata Consultancy Services",
+  "UST": "UST Global",
+  "AMAT": "Applied Materials",
+  "NA": "No owner assigned"
+ },
+ "burnup_start": "2026-09-07",
+ "burnup_end": "2027-04-26",
+ "deck_title_html": "<div class=\"tt-k\">Phoenix R6 · Program Cockpit</div><h2>Executive Summary<br><span>by Workstream &amp; L2</span></h2>",
+ "deck_sources": "Sources: ADO KDD and requirements exports (25 Oct 2026), L1–L4 mapping file",
+ "deck_kdd_src": "25 Oct 2026",
+ "deck_req_src": "25 Oct 2026",
+ "deck_footer_name_html": "<span>Phoenix R6 Program Cockpit</span>"
+}
