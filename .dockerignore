@@ -1,0 +1,43 @@
+# Version control
+.git/
+.gitignore
+
+# Python virtual environment - rebuilt in the image via pip
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Secrets - never bake credentials into the image
+.env
+.env.*
+
+# Local output and samples - the job creates its own working folders
+build/
+state/
+samples/
+tests/
+scripts/
+docs/
+
+# Reference data and the committed sample dashboard (about 4 MB, not needed at runtime)
+src/cockpit/cockpit_data.json
+src/*.html
+
+# Container/deploy tooling - not needed inside the image itself
+containerfile
+.containerignore
+.dockerignore
+deploy.sh
+redeploy.sh
+set-secrets.sh
+config.sh
+README.md
+
+# Editor / OS cruft
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

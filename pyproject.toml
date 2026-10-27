@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datasync"
+version = "0.1.0"
+description = "Sync Azure DevOps program data (via an Excel workbook in SharePoint) into the Phoenix Program Cockpit dashboard."
+requires-python = ">=3.11"
+dependencies = ["openpyxl>=3.1", "anthropic>=1.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+datasync-excel-to-model = "datasync.excel_to_model:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["datasync*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
