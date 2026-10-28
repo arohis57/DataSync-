@@ -4,7 +4,9 @@ Mirrors TaskLens: no storage account, Power Automate does all the SharePoint wor
 
   1. POST DATASYNC_INPUT_URL   -> flow returns {workbook_b64, state_b64}   (SharePoint -> job)
   2. run_refresh on a temp folder
-  3. POST DATASYNC_PUBLISH_URL <- {status, publish, email_*, dashboard, state_b64}   (job -> SharePoint + email)
+  3. when published and DATASYNC_SWA_TOKEN is set: deploy the dashboard to the Static Web App, and
+     link DATASYNC_DASHBOARD_URL in the email
+  4. POST DATASYNC_PUBLISH_URL <- {status, publish, email_*, dashboard, state_b64}   (job -> SharePoint + email)
 
 The flow URLs carry a signature, so they are secrets and are never logged. DATASYNC_NO_AGENT=1 skips
 the AI step. Exit code 0 means the dashboard was published and delivered; anything else shows up as
@@ -23,6 +25,7 @@ import tempfile
 import urllib.request
 from pathlib import Path
 
+from . import swa_deploy
 from .run_refresh import _dump, _load, run_refresh
 from .report_email import _recipients
 
@@ -81,6 +84,12 @@ def publish_body(summary: dict, out_dir: Path, state_dir: Path) -> dict:
     return body
 
 
+def add_dashboard_link(body: dict, url: str) -> None:
+    body["dashboard_url"] = url
+    body["email_html"] = f'<p><a href="{html.escape(url, quote=True)}">Open the dashboard</a></p>' + body["email_html"]
+    body["email_text"] = f"Dashboard: {url}\n\n" + body["email_text"]
+
+
 def notify_failure(url: str, what: str, opener=urllib.request.urlopen) -> None:
     """Tell people the refresh itself broke (nothing was published, state is untouched)."""
     text = f"The DataSync refresh could not complete: {what}. Nothing was published."
@@ -93,7 +102,7 @@ def notify_failure(url: str, what: str, opener=urllib.request.urlopen) -> None:
         log.error("could not send the failure notice: %s", type(e).__name__)
 
 
-def run_job(env=os.environ, opener=urllib.request.urlopen) -> int:
+def run_job(env=os.environ, opener=urllib.request.urlopen, deployer=swa_deploy.deploy) -> int:
     input_url, publish_url = env.get("DATASYNC_INPUT_URL"), env.get("DATASYNC_PUBLISH_URL")
     if not input_url or not publish_url:
         log.error("DATASYNC_INPUT_URL and DATASYNC_PUBLISH_URL must both be set")
@@ -113,6 +122,10 @@ def run_job(env=os.environ, opener=urllib.request.urlopen) -> int:
             unpack_state(inputs.get("state_b64"), tmp / "state")
             summary = run_refresh(workbook, tmp / "out", tmp / "state", use_agent=env.get("DATASYNC_NO_AGENT") != "1")
             body = publish_body(summary, tmp / "out", tmp / "state")
+            if summary["publish"] and env.get("DATASYNC_SWA_TOKEN"):
+                deployer(tmp / "out" / "cockpit.html", env["DATASYNC_SWA_TOKEN"])
+                if env.get("DATASYNC_DASHBOARD_URL"):
+                    add_dashboard_link(body, env["DATASYNC_DASHBOARD_URL"])
     except Exception as e:  # noqa: BLE001
         log.exception("refresh crashed")
         notify_failure(publish_url, f"the refresh crashed ({type(e).__name__}: {e})", opener)

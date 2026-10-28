@@ -132,3 +132,33 @@ def test_state_bundle_keeps_only_the_newest_digests(tmp_path):
 def test_unreadable_or_empty_state_starts_fresh(tmp_path, blob):
     unpack_state(blob, tmp_path / "s")
     assert not (tmp_path / "s").exists()
+
+
+SWA_ENV = {**ENV, "DATASYNC_SWA_TOKEN": "TOKEN123", "DATASYNC_DASHBOARD_URL": "https://site.azurestaticapps.net"}
+
+
+def test_dashboard_is_deployed_and_linked_in_the_email(flows):
+    calls = []
+    assert run_job(SWA_ENV, flows, lambda html, token: calls.append((html.read_bytes()[:15], token))) == 0
+    assert len(calls) == 1 and calls[0][1] == "TOKEN123"
+    (body,) = flows.posted
+    assert body["dashboard_url"] == "https://site.azurestaticapps.net"
+    assert body["email_html"].startswith('<p><a href="https://site.azurestaticapps.net">')
+    assert body["email_text"].startswith("Dashboard: https://site.azurestaticapps.net\n")
+
+
+def test_failed_deploy_publishes_nothing_and_sends_a_failure_notice(flows):
+    def boom(html, token):
+        raise job.swa_deploy.SwaDeployError("swa deploy exited 1")
+
+    assert run_job(SWA_ENV, flows, boom) == 1
+    (body,) = flows.posted
+    assert not body["publish"] and body["dashboard"] is None and "swa deploy exited 1" in body["email_text"]
+    assert "TOKEN123" not in body["email_text"]
+
+
+def test_blocked_run_does_not_deploy(flows, monkeypatch):
+    monkeypatch.setattr("datasync.run_refresh.analyze", lambda d, **kw: AgentResult({**GOOD, "status": "FAIL"}))
+    calls = []
+    run_job({**SWA_ENV, "DATASYNC_NO_AGENT": "0"}, flows, lambda *a: calls.append(a))
+    assert calls == []

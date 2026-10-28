@@ -4,19 +4,24 @@
 #
 # Bundled:
 #   1. Python 3.12 + the datasync package (workbook -> payload -> dashboard HTML)
-#   2. Claude Code CLI, used headless (`claude -p`) for the validation / insights step, same as TaskLens
+#   2. Node + the SWA CLI, to publish the dashboard to Azure Static Web Apps
+#   3. Claude Code CLI, used headless (`claude -p`) for the validation / insights step, same as TaskLens
 #
 # Runtime secrets (never baked in; injected as Container Apps secrets):
 #   CLAUDE_CODE_OAUTH_TOKEN  headless Claude auth (`claude setup-token`)
 #   DATASYNC_INPUT_URL       Power Automate flow that returns the workbook and saved state
 #   DATASYNC_PUBLISH_URL     Power Automate flow that uploads the dashboard and sends the email
+#   DATASYNC_SWA_TOKEN       deployment token of the Static Web App that hosts the dashboard (optional)
+# Plain env var DATASYNC_DASHBOARD_URL is the site's address, linked in the email.
 # Plain env vars: DATASYNC_EMAIL_TO / DATASYNC_EMAIL_CC (";"-separated), DATASYNC_AGENT_BACKEND.
 
 FROM python:3.12-slim-bookworm
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends curl ca-certificates nodejs npm \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g @azure/static-web-apps-cli \
+    && swa --version
 
 # Non-root user with a real $HOME: Claude Code writes ~/.claude.
 RUN useradd --create-home --home-dir /home/appuser --shell /bin/bash appuser \
