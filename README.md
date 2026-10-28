@@ -8,7 +8,7 @@ ADO ─► Excel workbook (SharePoint) ─► excel_to_model ─► agent ─►
 
 | Step | Code | Status |
 |---|---|---|
-| ADO to Excel | not written yet | todo |
+| ADO to Excel | `src/datasync/ado_to_excel.py` (pull, 4 traceability reports), `ado_to_datasync.py` (DataSync workbook) | written, not run against live ADO; see assumptions in `ado_to_datasync.py` |
 | Excel to payload | `src/datasync/excel_to_model.py` | done |
 | Validate / insights agent | `src/datasync/digest.py`, `agent.py`, prompt in `src/DataSync_prompt.md` | built, not yet run against the live API |
 | Render HTML (fixed template) | `src/cockpit/generate_cockpit.py` | done |
@@ -28,6 +28,11 @@ python -m venv .venv
 ## Use
 
 ```
+# ADO -> Excel (needs the ado extra and ADO_PAT). Writes R6_Traceability_Python_<stamp>\Phoenix_R6_DataSync.xlsx
+#   --use-cache rebuilds from the last pull, --datasync-only skips the 4 traceability reports
+.venv\Scripts\python -m pip install -e ".[ado]"
+.venv\Scripts\python -m datasync.ado_to_excel --datasync-only
+
 # build a sample workbook from the reference payload
 .venv\Scripts\python scripts\make_sample_workbook.py
 
@@ -68,6 +73,7 @@ Same pattern as TaskLens: the image is built remotely in ACR (no local Docker), 
 | `config.sh` | Resource names, `CRON_EXPRESSION` (UTC), `EMAIL_TO` / `EMAIL_CC` |
 | `deploy.sh` | One-time bootstrap: resource group, ACR, Container Apps environment, image, scheduled job |
 | `redeploy.sh` | Rebuild the image and point the job at it |
+| `setup-swa.sh` | Create the Static Web App that hosts the dashboard and wire its token and address into the job |
 | `set-secrets.sh` | Store `CLAUDE_CODE_OAUTH_TOKEN`, `DATASYNC_INPUT_URL`, `DATASYNC_PUBLISH_URL` on the job |
 
 Build the two Power Automate flows first ([docs/power_automate.md](docs/power_automate.md)), then:
@@ -79,5 +85,9 @@ cp .env.example .env     # fill in the three values
 az containerapp job start -n datasync-job -g datasync-rg      # run now
 az containerapp job execution list -n datasync-job -g datasync-rg -o table
 ```
+
+## Dashboard URL (Azure Static Web App)
+
+The job publishes `cockpit.html` to a Static Web App (`src/datasync/swa_deploy.py`) before the Power Automate delivery, and the report email links to it. The SharePoint copy stays as an archive. Run `./setup-swa.sh` after `./deploy.sh` and `./redeploy.sh` (the image now carries the SWA CLI). Access rules are in `config/staticwebapp.config.json`: only people invited with the `reader` role can open it (Free plan, up to 25 invitees). If `DATASYNC_SWA_TOKEN` is not set the step is skipped. A failed deploy fails the run, sends the failure email and publishes nothing, so the dashboard, SharePoint and saved state never disagree.
 
 Test the job locally against `scripts/mock_flows.py` first. The job exits 0 only when the dashboard was published and delivered, so blocked or failed runs show as failed executions.

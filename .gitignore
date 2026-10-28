@@ -8,3 +8,8 @@ __pycache__/
 build/
 samples/*.xlsx
 state/
+
+# ADO pull cache and generated extracts
+src/datasync/ado_r6_python_cache.json
+R6_Traceability_Python_*/
+src/datasync/R6_Traceability_Python_*/

@@ -14,3 +14,8 @@ CRON_EXPRESSION="${CRON_EXPRESSION:-0 13 * * 1-5}"
 # Who gets the refresh report. ";"-separated addresses; blank = the publish flow decides.
 EMAIL_TO="${EMAIL_TO:-}"
 EMAIL_CC="${EMAIL_CC:-}"
+# Static Web App that hosts the dashboard (created by ./setup-swa.sh). Free plan: access is limited to
+# invited people (role "reader"). Standard plan can also lock sign-in to your tenant.
+SWA_NAME="${SWA_NAME:-datasync-cockpit}"
+SWA_LOCATION="${SWA_LOCATION:-eastus2}"
+SWA_SKU="${SWA_SKU:-Free}"
