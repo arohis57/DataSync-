@@ -8,7 +8,8 @@ ADO ─► Excel workbook (SharePoint) ─► excel_to_model ─► agent ─►
 
 | Step | Code | Status |
 |---|---|---|
-| ADO to Excel | `src/datasync/ado_to_excel.py` (pull, 4 traceability reports), `ado_to_datasync.py` (DataSync workbook) | written, not run against live ADO; see assumptions in `ado_to_datasync.py` |
+| ADO to Excel | `src/datasync/phoenix_r6_master.py` (pull, 4 traceability reports, DataSync workbook, cockpit HTML) | DataSync workbook step added, not yet run against live ADO |
+| ADO to Excel (older) | `src/datasync/ado_to_excel.py`, `ado_to_datasync.py` | superseded by `phoenix_r6_master.py` |
 | Excel to payload | `src/datasync/excel_to_model.py` | done |
 | Validate / insights agent | `src/datasync/digest.py`, `agent.py`, prompt in `src/DataSync_prompt.md` | built, not yet run against the live API |
 | Render HTML (fixed template) | `src/cockpit/generate_cockpit.py` | done |
@@ -28,7 +29,12 @@ python -m venv .venv
 ## Use
 
 ```
-# ADO -> Excel (needs the ado extra and ADO_PAT). Writes R6_Traceability_Python_<stamp>\Phoenix_R6_DataSync.xlsx
+# ADO -> Excel + cockpit (needs the ado extra, ADO_PAT and src\datasync\cockpit_template.html).
+# Writes src\datasync\Reports\Phoenix_R6_<stamp>\ with the 4 reports, Phoenix_R6_DataSync.xlsx and the HTML.
+#   --use-cache rebuilds from the last pull, --skip-cockpit skips the HTML (no template needed)
+.venv\Scripts\python src\datasync\phoenix_r6_master.py
+
+# older script. Writes R6_Traceability_Python_<stamp>\Phoenix_R6_DataSync.xlsx
 #   --use-cache rebuilds from the last pull, --datasync-only skips the 4 traceability reports
 .venv\Scripts\python -m pip install -e ".[ado]"
 .venv\Scripts\python -m datasync.ado_to_excel --datasync-only

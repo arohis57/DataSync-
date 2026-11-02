@@ -13,3 +13,7 @@ state/
 src/datasync/ado_r6_python_cache.json
 R6_Traceability_Python_*/
 src/datasync/R6_Traceability_Python_*/
+
+# phoenix_r6_master.py output and saved ADO data
+src/datasync/Reports/
+src/datasync/_data/
